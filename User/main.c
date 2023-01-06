@@ -11,14 +11,14 @@
 #include "fmc_user.h"
 #include "dfu_transfer.h"
 
-#define PLLCON_SETTING          CLK_PLLCON_144MHz_HXT
-#define PLL_CLOCK               144000000
+#define PLLCON_SETTING    CLK_PLLCON_144MHz_HXT
+#define PLL_CLOCK         144000000
 
 #define V6M_AIRCR_VECTKEY_DATA    0x05FA0000UL
 #define V6M_AIRCR_SYSRESETREQ     0x00000004UL
 
-#define DetectPin   PD0
-#define RestartPin   PD1
+#define DetectPin     PD0
+#define RestartPin    PD1
 
 uint32_t g_apromSize;
 
@@ -101,26 +101,26 @@ int32_t main(void)
     SYS_Init();
 
     if (DetectPin == 0) {
-		/* Prepare the device for ISP */
-		CLK->AHBCLK |= CLK_AHBCLK_ISP_EN_Msk;
-		FMC->ISPCON |= FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_APUEN_Msk | FMC_ISPCON_ISPFF_Msk;
-		g_apromSize = GetApromSize();
+        /* Prepare the device for ISP */
+        CLK->AHBCLK |= CLK_AHBCLK_ISP_EN_Msk;
+        FMC->ISPCON |= FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_APUEN_Msk | FMC_ISPCON_ISPFF_Msk;
+        g_apromSize = GetApromSize();
 
-		/* Open USB controller */
-		USBD_Open(&gsInfo, DFU_ClassRequest, NULL);
+        /* Open USB controller */
+        USBD_Open(&gsInfo, DFU_ClassRequest, NULL);
 
-		/*Init Endpoint configuration for DFU */
-		DFU_Init();
+        /*Init Endpoint configuration for DFU */
+        DFU_Init();
 
-		/* Start USB device */
-		USBD_Start();
+        /* Start USB device */
+        USBD_Start();
 
-		/* polling USBD interrupt flag */
-		while(RestartPin != 0)
-		{
-			USBD_IRQHandler();
-		}
-	}
+        /* polling USBD interrupt flag */
+        while(RestartPin != 0)
+        {
+            USBD_IRQHandler();
+        }
+    }
 
     SYS->RSTSRC = (SYS_RSTSRC_RSTS_POR_Msk | SYS_RSTSRC_RSTS_RESET_Msk);//clear bit
     FMC->ISPCON &=  ~(FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_BS_Msk);
