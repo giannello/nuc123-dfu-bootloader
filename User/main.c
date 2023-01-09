@@ -97,11 +97,13 @@ int32_t main(void)
     /* Unlock write-protected registers */
     SYS_UnlockReg();
 
-    /* Init system and multi-funcition I/O */
+    /* Init system and multi-function I/O */
     SYS_Init();
 
-    if (DetectPin == 0) {
+    // If we press the "enter bootloader" button OR we arrived here after a MCU restart, enter DFU mode
+    if (DetectPin == 0 || (SYS->RSTSRC & SYS_RSTSRC_RSTS_SYS_Msk)) {
         /* Prepare the device for ISP */
+        // Initialize clock
         CLK->AHBCLK |= CLK_AHBCLK_ISP_EN_Msk;
         FMC->ISPCON |= FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_APUEN_Msk | FMC_ISPCON_ISPFF_Msk;
         g_apromSize = GetApromSize();
