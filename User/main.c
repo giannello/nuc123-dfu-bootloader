@@ -17,6 +17,8 @@
 #define DetectPin     PD0
 #define RestartPin    PD1
 
+#define ISPLED   PB8
+
 uint32_t g_apromSize;
 uint8_t g_reset = 0;
 
@@ -114,6 +116,9 @@ int32_t main(void)
 
         /* Start USB device */
         USBD_Start();
+
+        // Turn on ISPLED to show we're in DFU mode
+        ISPLED = 0;
 
         /* polling USBD interrupt flag */
         while(RestartPin != 0 && !g_reset)
