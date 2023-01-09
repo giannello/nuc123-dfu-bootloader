@@ -14,6 +14,7 @@
 #include "fmc_user.h"
 
 extern uint32_t g_apromSize;
+extern uint8_t g_reset;
 #define APROM_BLOCK_NUM         ((g_apromSize/TRANSFER_SIZE)-1)
 
 uint32_t command_Count = 0;
@@ -275,6 +276,7 @@ void DFU_ClassRequest(void)
                         dfu_status.iString = 0; /* iString */
                         prog_struct.block_num = 0;
                         prog_struct.data_len = 0;
+                        g_reset = 1;
                         break;
 
                     default:

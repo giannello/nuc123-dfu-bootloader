@@ -21,6 +21,7 @@
 #define RestartPin    PD1
 
 uint32_t g_apromSize;
+uint8_t g_reset = 0;
 
 uint32_t GetApromSize()
 {
@@ -118,7 +119,7 @@ int32_t main(void)
         USBD_Start();
 
         /* polling USBD interrupt flag */
-        while(RestartPin != 0)
+        while(RestartPin != 0 && !g_reset)
         {
             USBD_IRQHandler();
         }
