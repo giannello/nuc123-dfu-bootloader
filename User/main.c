@@ -18,11 +18,13 @@
 #define RestartPin    PD1
 
 #define ISPLED   PB8
+#define LDROMLED PD2
+#define APROMLED PD3
 
-uint32_t g_apromSize;
+uint32_t g_romSize;
 uint8_t g_reset = 0;
 
-uint32_t GetApromSize()
+uint32_t GetRomSize()
 {
     //the smallest of APROM size is 2K
     uint32_t size = 0x800, data;
@@ -42,6 +44,11 @@ uint32_t GetApromSize()
         }
     }
     while(1);
+}
+
+uint8_t isLDROM()
+{
+    return !!(FMC->ISPCON & FMC_ISPCON_BS_Msk);
 }
 
 void SYS_Init(void)
@@ -106,7 +113,7 @@ int32_t main(void)
         // Initialize clock
         CLK->AHBCLK |= CLK_AHBCLK_ISP_EN_Msk;
         FMC->ISPCON |= FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_APUEN_Msk | FMC_ISPCON_ISPFF_Msk;
-        g_apromSize = GetApromSize();
+        g_romSize = GetRomSize();
 
         /* Open USB controller */
         USBD_Open(&gsInfo, DFU_ClassRequest, NULL);
@@ -119,6 +126,11 @@ int32_t main(void)
 
         // Turn on ISPLED to show we're in DFU mode
         ISPLED = 0;
+
+        // Turn on LDROMLED if we booted from LDROM
+        LDROMLED = !isLDROM();
+        // Turn on APROMLED if we booted from APROM
+        APROMLED = isLDROM();
 
         /* polling USBD interrupt flag */
         while(RestartPin != 0 && !g_reset)

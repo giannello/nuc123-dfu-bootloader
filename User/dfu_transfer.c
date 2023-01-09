@@ -13,9 +13,9 @@
 #include "dfu_transfer.h"
 #include "fmc_user.h"
 
-extern uint32_t g_apromSize;
+extern uint32_t g_romSize;
 extern uint8_t g_reset;
-#define APROM_BLOCK_NUM         ((g_apromSize/TRANSFER_SIZE)-1)
+#define APROM_BLOCK_NUM         ((g_romSize/TRANSFER_SIZE)-1)
 
 uint32_t command_Count = 0;
 uint8_t manifest_state = MANIFEST_COMPLETE;

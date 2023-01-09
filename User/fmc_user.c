@@ -11,9 +11,13 @@
 
 int FMC_Proc(unsigned int u32Cmd, unsigned int addr_start, unsigned int addr_end, unsigned int *data)
 {
-    unsigned int u32Addr, Reg;
+    unsigned int u32Addr, offset, Reg;
 
-    for(u32Addr = addr_start; u32Addr < addr_end; data++, u32Addr += 4)
+    // If we boot from LDROM, we write to APROM at 0x0
+    // If we boot from APROM, we write to LDROM at 0x0010_0000
+    offset = isLDROM() ? 0x0 : 0x00100000;
+
+    for(u32Addr = addr_start + offset; u32Addr < addr_end + offset; data++, u32Addr += 4)
     {
         FMC->ISPADR = u32Addr;
 
