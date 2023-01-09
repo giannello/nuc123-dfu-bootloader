@@ -14,9 +14,6 @@
 #define PLLCON_SETTING    CLK_PLLCON_144MHz_HXT
 #define PLL_CLOCK         144000000
 
-#define V6M_AIRCR_VECTKEY_DATA    0x05FA0000UL
-#define V6M_AIRCR_SYSRESETREQ     0x00000004UL
-
 #define DetectPin     PD0
 #define RestartPin    PD1
 
@@ -125,9 +122,15 @@ int32_t main(void)
         }
     }
 
-    SYS->RSTSRC = (SYS_RSTSRC_RSTS_POR_Msk | SYS_RSTSRC_RSTS_RESET_Msk);//clear bit
-    FMC->ISPCON &=  ~(FMC_ISPCON_ISPEN_Msk | FMC_ISPCON_BS_Msk);
-    SCB->AIRCR = (V6M_AIRCR_VECTKEY_DATA | V6M_AIRCR_SYSRESETREQ);
+    // Clear reset bits
+    SYS->RSTSRC = (SYS_RSTSRC_RSTS_POR_Msk | SYS_RSTSRC_RSTS_RESET_Msk);
+    // Disable ISP
+    FMC->ISPCON &=  ~(FMC_ISPCON_ISPEN_Msk);
+    // Always boot from the other partition
+    FMC->ISPCON ^= FMC_ISPCON_BS_Msk;
+
+    // MCU reset
+    NVIC_SystemReset();
 
     /* Trap the CPU */
     while(1);
